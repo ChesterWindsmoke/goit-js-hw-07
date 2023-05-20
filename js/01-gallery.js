@@ -1,35 +1,48 @@
 import { galleryItems } from './gallery-items.js';
-// Change code below this line
 
+// Контейнер зображень (список)
 const galleryList = document.querySelector('.gallery');
 
 const cardsMarkup = createGalleryItems(galleryItems);
 
 galleryList.insertAdjacentHTML('afterbegin', cardsMarkup);
 
+function createGalleryItems(items) {
+  const galleryMarkup = items
+    .map(({ preview, original, description }) => {
+      return `
+        <li class="gallery__item">
+          <a class="gallery__link" href="${original}">
+            <img
+              class="gallery__image"
+              src="${preview}"
+              data-source="${original}"
+              alt="${description}"
+            />
+          </a>
+        </li>`;
+    })
+    .join('');
 
-function createGalleryItems(galleryItems) {
+  return galleryMarkup;
+}
 
-    const galleryMarkup = galleryItems.map(({ preview, original, description }) => {
+galleryList.addEventListener('click', onGalleryItemClick);
 
-        return `
-            <li class="gallery__item">
-  <a class="gallery__link" href="large-image.jpg">
-    <img
-      class="gallery__image"
-      src="${preview}"
-      data-source="${original}"
-      alt="${description}"
-    />
-  </a>
-</li>`
+function onGalleryItemClick(event) {
+  event.preventDefault(); // Забороняємо дію за замовчуванням, тобто завантаження зображення
 
-    }).join('');
+  if (!event.target.classList.contains('gallery__image')) {
+    return;
+  }
 
-    return galleryMarkup;
+  const originalImage = event.target;
+  const originalSource = originalImage.dataset.source;
+  const description = originalImage.alt;
+
+  const instance = basicLightbox.create(`<img src="${originalSource}" alt="${description}"/>`);
+
+  instance.show();
 }
 
 
-
-
-// console.log(galleryItems);
